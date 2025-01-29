@@ -56,7 +56,7 @@ export default createStore({
   actions: {
     async fetchAllProducts({ commit }) {
       try {
-        const response = await axios.get("http://localhost:8080/api/products");
+        const response = await axios.get("http://localhost:5004/api/products");
         commit("SET_PRODUCTS", response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -64,7 +64,7 @@ export default createStore({
     },
     async fetchProductsByCategory({ commit }, category) {
       try {
-        const response = await axios.get(`http://localhost:8080/api/products/category/${category}`);
+        const response = await axios.get(`http://localhost:5004/api/products/category/${category}`);
         commit("SET_PRODUCTS", response.data);
       } catch (error) {
         console.error("Error fetching products by category:", error);
