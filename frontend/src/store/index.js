@@ -4,10 +4,12 @@ import axios from "axios";
 export default createStore({
   state: {
     name: [],
+    id: [],
     products: [],
     filteredProducts: [],
     categories: ["Dairy", "Fruits", "Vegetables", "Non-Veg"],
     itemsInCart: [],
+    userId: null,
   },
   mutations: {
     SET_PRODUCTS(state, products) {
@@ -18,7 +20,7 @@ export default createStore({
         price: product.price,
         quantity: product.quantity,
         category: product.category,
-        image: `data:image/png;base64,${product.image}`,  
+        image: `data:image/png;base64,${product.image}`, 
       }));
       state.filteredProducts = state.products;
     },
@@ -43,7 +45,14 @@ export default createStore({
         state.itemsInCart = [...state.itemsInCart];  // Force reactivity
       }
     },
+    SET_USER_ID(state, userId) {
+      state.userId = userId;
+    },
+    SET_USER_NAME(state, userName) {
+      state.name = userName;
+    },
   },
+
   actions: {
     async fetchAllProducts({ commit }) {
       try {
@@ -74,6 +83,12 @@ export default createStore({
         commit("UPDATE_CART_QUANTITY", payload);
       }
     },
+    setUserId({ commit }, userId) {
+      commit('SET_USER_ID', userId);
+    },
+    setUserName({ commit }, userName) {
+      commit('SET_USER_NAME', userName);
+    },
   },
   getters: {
     getAllProducts: (state) => state.filteredProducts,
@@ -81,5 +96,7 @@ export default createStore({
     getCartItems: (state) => state.itemsInCart,
     getCartTotal: (state) =>
       state.itemsInCart.reduce((total, item) => total + item.price * item.cartQuantity, 0),
+    getUserId: (state) => state.userId,
+    getUserName: (state) => state.name,
   },
 });

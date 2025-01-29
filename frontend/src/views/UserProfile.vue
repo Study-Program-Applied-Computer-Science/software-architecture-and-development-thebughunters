@@ -25,7 +25,7 @@
         
         <ul>
           <li><strong>Full Name:</strong> 
-            <span v-if="!isEditing">{{ profile.fullName }}</span>
+            <span v-if="!isEditing">{{ profile.Name }}</span>
             <input v-else v-model="profile.fullName">
           </li>
           <li><strong>Mobile:</strong> 
@@ -53,6 +53,7 @@
   
   <script>
   import axios from 'axios';
+  import { mapGetters} from 'vuex';
 
   export default {
     name: "UserProfile",
@@ -81,11 +82,22 @@
     created() {
     this.fetchProfile();
   },
+  computed: {   
+      ...mapGetters(["getUserName"]), 
+
+     },
   methods: {
     async fetchProfile() {
       try {
-        const response = await axios.get('http://localhost:5002/api/users');
+      
+        const authToken = localStorage.getItem('authToken');
+        const response = await axios.get(`http://localhost:5002/api/users/ ${this.getUserName}`, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
         this.profile = response.data;
+        console.log(response.data);
       } catch (error) {
         console.error('Error fetching profile:', error);
       }
@@ -101,7 +113,12 @@
     },
     async saveProfile() {
       try {
-        const response = await axios.put('http://localhost:5002/api/users', this.profile);
+        const authToken = localStorage.getItem('authToken');
+        const response = await axios.put('http://localhost:5002/api/users', this.profile, {
+          headers: {
+        'Authorization': `Bearer ${authToken}`
+          }
+        });
         console.log('Profile updated successfully:', response.data);
       } catch (error) {
         console.error('Error updating profile:', error);

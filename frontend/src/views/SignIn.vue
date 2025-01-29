@@ -50,7 +50,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['setUserName']),
+    ...mapActions(['setUserName', 'setUserId']),
     validateForm() {
       this.errors = {};
 
@@ -78,12 +78,17 @@ export default {
         if (response.data.access_token) {
           // Save the token (optional: use localStorage or Vuex)
           localStorage.setItem('authToken', response.data.access_token);
+          console.log(response.data);
 
           // Save the username in the store
-          this.setUserName(this.name);
+          this.setUserId(response.data.id);
+          this.setUserName(response.data.name);
+            // Save the user ID in the store
+            // this.$store.commit('setUserId', response.data.id);
+          
 
           // Navigate to the dashboard
-          this.$router.push('/dashboard');
+          this.$router.push('/UserProfile');
         } else {
           this.errors.general = 'Invalid email or password.';
         }
