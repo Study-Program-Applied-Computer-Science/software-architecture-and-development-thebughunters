@@ -1,5 +1,6 @@
 import { createStore } from "vuex";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 export default createStore({
   state: {
@@ -10,6 +11,7 @@ export default createStore({
     categories: ["Dairy", "Fruits", "Vegetables", "Non-Veg"],
     itemsInCart: [],
     userId: null,
+    orders: [],
   },
   mutations: {
     SET_PRODUCTS(state, products) {
@@ -42,7 +44,7 @@ export default createStore({
       const product = state.itemsInCart.find((item) => item.id === id);
       if (product) {
         product.cartQuantity = quantity;
-        state.itemsInCart = [...state.itemsInCart];  // Force reactivity
+        state.itemsInCart = [...state.itemsInCart]; 
       }
     },
     SET_USER_ID(state, userId) {
@@ -51,6 +53,13 @@ export default createStore({
     SET_USER_NAME(state, userName) {
       state.name = userName;
     },
+    PLACE_ORDER(state) {
+      state.itemsInCart = []; 
+    },
+    SET_ORDERS(state, orders) {
+      state.orders = orders; 
+    },
+
   },
 
   actions: {
@@ -89,6 +98,43 @@ export default createStore({
     setUserName({ commit }, userName) {
       commit('SET_USER_NAME', userName);
     },
+    async placeOrder({ commit, state }) {
+      if (state.itemsInCart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+
+      try {
+
+        const orderData = {
+          orderId: uuidv4(), // Generate unique order ID once
+          items: state.itemsInCart.map(({...rest }) => ({
+            ...rest,
+            price: parseFloat(rest.price),   // Ensure price is a number
+            cartQuantity: parseInt(rest.cartQuantity) // Ensure quantity is an integer
+          })),
+        };
+
+        console.log("Sending Order Data:", orderData);
+
+        const response = await axios.post("http://127.0.0.1:8000/orders/", orderData);
+
+        if (response.status === 200) {
+          commit("PLACE_ORDER");
+          alert("Order placed successfully!");
+        }
+      } catch (error) {
+        console.error("Error placing order:", error.response?.data || error.message);
+      }
+    },
+    async fetchOrders({ commit }) {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/orders/");
+        commit("SET_ORDERS", response.data);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    },
   },
   getters: {
     getAllProducts: (state) => state.filteredProducts,
@@ -98,5 +144,6 @@ export default createStore({
       state.itemsInCart.reduce((total, item) => total + item.price * item.cartQuantity, 0),
     getUserId: (state) => state.userId,
     getUserName: (state) => state.name,
+    getOrders: (state) => state.orders,
   },
 });
