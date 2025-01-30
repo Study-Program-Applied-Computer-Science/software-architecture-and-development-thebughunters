@@ -88,7 +88,7 @@ export default {
           
 
           // Navigate to the dashboard
-          this.$router.push('/UserProfile');
+          this.$router.push('/dashboard');
         } else {
           this.errors.general = 'Invalid email or password.';
         }

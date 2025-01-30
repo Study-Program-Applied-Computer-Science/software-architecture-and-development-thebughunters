@@ -39,14 +39,14 @@
   </template>
   
   <script>
-  import ProductCard from "@/components/ProductCard.vue";
-import { mapActions, mapGetters } from "vuex";
+  // import ProductCard from "@/components/ProductCard.vue";
+  import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "DashboardView",
-  components: {
-    ProductCard,
-  },
+  // components: {
+  //   // ProductCard,
+  // },
   data() {
     return {
       searchQuery: "",

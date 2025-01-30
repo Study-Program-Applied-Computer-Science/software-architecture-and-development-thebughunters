@@ -5,6 +5,7 @@ import DashBoardView from "../views/DashBoard.vue";
 import CartView from "../views/Cart.vue";  
 import BillingView from "../views/BillingView.vue";  
 import OrdersView from "../views/OrdersView.vue"; 
+import AdminProfile from "@/views/AdminProfile.vue";
 
 const routes = [
   {
@@ -31,21 +32,6 @@ const routes = [
     name: "about",
     component: () => import("../views/AboutView.vue"),
   },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
   {
     path: "/signin",
     name: "signin",
@@ -66,6 +52,11 @@ const routes = [
     path: "/orders",
     name: "orders",
     component: OrdersView,
+  },
+  {
+    path: "/admin",
+    name: "admin",
+    component: AdminProfile,
   }
 ];
 
