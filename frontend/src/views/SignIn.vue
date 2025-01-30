@@ -13,9 +13,9 @@
     
         
         <div class="form-group">
-          <label for="username">Username</label>
-          <input type="email" id="username" v-model="username" placeholder="Enter your gmail" /> <br />
-          <span v-if="errors.username" class="error">{{ errors.username }}</span>
+          <label for="name">Email</label>
+          <input type="email" id="email" v-model="email" placeholder="Enter your email" /> <br />
+          <span v-if="errors.email" class="error">{{ errors.email }}</span>
         </div>
         <div class="form-group">
           <label for="password">Password</label>
@@ -50,12 +50,12 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['setUserName', 'setUserId']),
+    ...mapActions(['setEmail', 'setUserId']),
     validateForm() {
       this.errors = {};
 
-      if (!this.username) {
-        this.errors.username = 'Email is required.';
+      if (!this.email) {
+        this.errors.email = 'Email is required.';
       }
 
       if (!this.password) {
@@ -71,7 +71,7 @@ export default {
       try {
         // Send the login request to the auth service
         const response = await axios.post('http://localhost:5001/api/login/user', {
-          email: this.username,
+          email: this.email,
           password: this.password
         });
 
@@ -80,9 +80,9 @@ export default {
           localStorage.setItem('authToken', response.data.access_token);
           console.log(response.data);
 
-          // Save the username in the store
+          // Save the email in the store
           this.setUserId(response.data.id);
-          this.setUserName(response.data.name);
+          this.setEmail(response.data.email);
             // Save the user ID in the store
             // this.$store.commit('setUserId', response.data.id);
           

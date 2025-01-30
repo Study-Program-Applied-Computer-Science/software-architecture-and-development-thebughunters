@@ -50,8 +50,8 @@ export default createStore({
     SET_USER_ID(state, userId) {
       state.userId = userId;
     },
-    SET_USER_NAME(state, userName) {
-      state.name = userName;
+    SET_Email(state, email) {
+      state.email = email;
     },
     PLACE_ORDER(state) {
       state.itemsInCart = []; 
@@ -95,8 +95,8 @@ export default createStore({
     setUserId({ commit }, userId) {
       commit('SET_USER_ID', userId);
     },
-    setUserName({ commit }, userName) {
-      commit('SET_USER_NAME', userName);
+    setEmail({ commit }, email) {
+      commit('SET_USER_NAME', email);
     },
     async placeOrder({ commit, state }) {
       if (state.itemsInCart.length === 0) {
@@ -143,7 +143,7 @@ export default createStore({
     getCartTotal: (state) =>
       state.itemsInCart.reduce((total, item) => total + item.price * item.cartQuantity, 0),
     getUserId: (state) => state.userId,
-    getUserName: (state) => state.name,
+    getEmail: (state) => state.email,
     getOrders: (state) => state.orders,
   },
 });
