@@ -83,7 +83,7 @@
     this.fetchProfile();
   },
   computed: {   
-      ...mapGetters(["getUserName"]), 
+      ...mapGetters(["getUserId", "getEmail", "getUserName"]), 
 
      },
   methods: {

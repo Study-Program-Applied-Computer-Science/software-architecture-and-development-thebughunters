@@ -38,6 +38,18 @@
           <span v-if="!isCollapsed">Profile</span>
         </router-link>
       </li>
+      <li>
+        <router-link to="/coupons" class="nav-item" active-class="active">
+          <font-awesome-icon :icon="['fas', 'ticket-alt']" />
+          <span v-if="!isCollapsed">Coupons</span>
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/admin" class="nav-item" active-class="active">
+          <font-awesome-icon :icon="['fas', 'user']" />
+          <span v-if="!isCollapsed">admin</span>
+        </router-link>
+      </li>
       </ul>
     </div>
   </template>

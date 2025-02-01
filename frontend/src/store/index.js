@@ -7,6 +7,7 @@ export default createStore({
     name: [],
     id: [],
     products: [],
+    products_admin: [],
     filteredProducts: [],
     categories: ["Dairy", "Fruits", "Vegetables", "Non-Veg"],
     itemsInCart: [],
@@ -16,6 +17,18 @@ export default createStore({
   mutations: {
     SET_PRODUCTS(state, products) {
       state.products = products.map((product) => ({
+        id: product.id,
+        title: product.name,
+        description: product.description,
+        price: product.price,
+        quantity: product.quantity,
+        category: product.category,
+        image: `data:image/png;base64,${product.image}`, 
+      }));
+      state.filteredProducts = state.products;
+    },
+    SET_PRODUCTS_admin(state, products) {
+      state.products_admin = products.map((product) => ({
         id: product.id,
         title: product.name,
         description: product.description,
@@ -62,23 +75,43 @@ export default createStore({
 
   
     EDIT_PRODUCT(state, updatedProduct) {
-      const index = state.products.findIndex((p) => p.id === updatedProduct.id);
+      const index = state.products_admin.findIndex((p) => p.id === updatedProduct.id);
       if (index !== -1) {
         state.products[index] = updatedProduct; // Update the product in the state
       }
     },
       
       DELETE_PRODUCT(state, productId) {
-        state.products = state.products.filter(product => product.id !== productId);
+        state.products_admin = state.products_admin.filter(product => product.id !== productId);
         state.filteredProducts = state.filteredProducts.filter(product => product.id !== productId);
       }
 
   },
 
   actions: {
+    async fetchAllProducts_admin({ commit }) {
+      try {
+        console.log(localStorage.getItem("adminToken"));
+        const response = await axios.get("http://localhost:5004/api/products", {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("adminToken")}` // Retrieve stored token
+          }
+        });
+       
+        commit("SET_PRODUCTS_admin", response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    },
     async fetchAllProducts({ commit }) {
       try {
-        const response = await axios.get("http://localhost:5004/api/products");
+        console.log(localStorage.getItem("authToken"));
+        const response = await axios.get("http://localhost:5004/api/products", {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("authToken")}` // Retrieve stored token
+          }
+        });
+       
         commit("SET_PRODUCTS", response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -109,7 +142,10 @@ export default createStore({
       commit('SET_USER_ID', userId);
     },
     setEmail({ commit }, email) {
-      commit('SET_USER_NAME', email);
+      commit('SET_USER_Email', email);
+    },
+    setUserName({ commit }, userName) {
+      commit('SET_USER_Name', userName);
     },
     async placeOrder({ commit, state }) {
       if (state.itemsInCart.length === 0) {
@@ -152,7 +188,12 @@ export default createStore({
       try {
         const response = await axios.put(
           `http://localhost:5004/api/products/${updatedProduct.id}`,
-          updatedProduct
+          updatedProduct,
+          {
+            headers: {
+              "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+            }
+          }
         );
         if (response.status === 200) {
           commit("EDIT_PRODUCT", response.data); // Update state
@@ -163,7 +204,11 @@ export default createStore({
     },
     async deleteProduct({ commit }, productId) {
       try {
-        await axios.delete(`http://localhost:5004/api/products/${productId}`);
+        await axios.delete(`http://localhost:5004/api/products/${productId}`, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+          }
+        });
         commit("DELETE_PRODUCT", productId); // Remove from state after successful deletion
       } catch (error) {
         console.error("Error deleting product:", error);
@@ -177,6 +222,7 @@ export default createStore({
     getCartTotal: (state) =>
       state.itemsInCart.reduce((total, item) => total + item.price * item.cartQuantity, 0),
     getUserId: (state) => state.userId,
+    getUserName: (state) => state.userName,
     getEmail: (state) => state.email,
     getOrders: (state) => state.orders,
   },

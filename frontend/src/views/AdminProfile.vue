@@ -95,6 +95,7 @@
   </template>
 
   <script>
+
   import { mapActions, mapGetters } from "vuex";
 
   export default {
@@ -139,7 +140,7 @@
     },
     },
     methods: {
-    ...mapActions(["fetchAllProducts", "fetchProductsByCategory", "updateProduct", "deleteProduct"]),
+    ...mapActions(["fetchAllProducts_admin", "fetchProductsByCategory", "updateProduct", "deleteProduct"]),
 
     filterProducts() {
       this.$store.dispatch("filterProducts", this.searchQuery);
@@ -149,7 +150,7 @@
       if (this.selectedCategory) {
       this.fetchProductsByCategory(this.selectedCategory);
       } else {
-      this.fetchAllProducts();
+      this.fetchAllProducts_admin();
       }
     },
 
@@ -161,7 +162,7 @@
   },
   openEditModal(product) {
     this.updateProduct = { ...product };
-    this.showEditModal = true;
+    this.modalActive = true;
     console.log(this.modalActive); 
   },
   saveChanges() {
@@ -187,8 +188,14 @@
   }
   },
   created() {
-  this.fetchAllProducts();
-  },
+  console.log("Checking stored tokens...");
+  
+  const ADMIN_TOKEN = process.env.VUE_APP_ADMIN_TOKEN;
+//  console.log("ADMIN_TOKEN:", ADMIN_TOKEN);
+ localStorage.setItem("adminToken", ADMIN_TOKEN);
+    this.fetchAllProducts_admin(); // Only fetch data if tokens exist
+  
+}
 };
 </script>
 
