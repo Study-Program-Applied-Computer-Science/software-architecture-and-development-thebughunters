@@ -56,11 +56,10 @@ public class StripeService {
                     .paymentMessage("Created payment session")
                     .paymentUrl(session.getUrl())
                     .build();
-
         }
-        catch (StripeException e) {
+        catch (StripeException e)
+        {
             throw new PaymentFailureException(e.getMessage());
         }
-
     }
 }
