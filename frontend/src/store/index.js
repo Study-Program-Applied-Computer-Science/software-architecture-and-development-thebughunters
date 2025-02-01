@@ -60,6 +60,19 @@ export default createStore({
       state.orders = orders; 
     },
 
+  
+    EDIT_PRODUCT(state, updatedProduct) {
+      const index = state.products.findIndex((p) => p.id === updatedProduct.id);
+      if (index !== -1) {
+        state.products[index] = updatedProduct; // Update the product in the state
+      }
+    },
+      
+      DELETE_PRODUCT(state, productId) {
+        state.products = state.products.filter(product => product.id !== productId);
+        state.filteredProducts = state.filteredProducts.filter(product => product.id !== productId);
+      }
+
   },
 
   actions: {
@@ -133,6 +146,27 @@ export default createStore({
         commit("SET_ORDERS", response.data);
       } catch (error) {
         console.error("Error fetching orders:", error);
+      }
+    },
+    async updateProduct({ commit }, updatedProduct) {
+      try {
+        const response = await axios.put(
+          `http://localhost:5004/api/products/${updatedProduct.id}`,
+          updatedProduct
+        );
+        if (response.status === 200) {
+          commit("EDIT_PRODUCT", response.data); // Update state
+        }
+      } catch (error) {
+        console.error("Error updating product:", error);
+      }
+    },
+    async deleteProduct({ commit }, productId) {
+      try {
+        await axios.delete(`http://localhost:5004/api/products/${productId}`);
+        commit("DELETE_PRODUCT", productId); // Remove from state after successful deletion
+      } catch (error) {
+        console.error("Error deleting product:", error);
       }
     },
   },

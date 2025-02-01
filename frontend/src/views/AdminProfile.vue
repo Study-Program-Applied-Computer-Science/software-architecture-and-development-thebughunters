@@ -4,107 +4,118 @@
     <div class="toolbar">
       <input type="text" v-model="searchQuery" placeholder="Search for Product" class="search-input" @input="filterProducts" />
       <select v-model="selectedCategory" class="category-filter">
-        <option value="">All Categories</option>
-        <option value="Fruits">Fruits</option>
-        <option value="Dairy">Dairy</option>
-        <option value="Vegetables">Vegetables</option>
+      <option value="">All Categories</option>
+      <option value="Fruits">Fruits</option>
+      <option value="Dairy">Dairy</option>
+      <option value="Vegetables">Vegetables</option>
       </select>
-      <button class="add-btn">Add Product</button>
+      <button class="add-btn" @click="openAddModal">Add Product</button>
     </div>
 
     <!-- Product Table -->
     <div class="table-container">
       <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Price</th>
-            <th>Description</th>
-            <th>Quantity</th>
-            <th>Category</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(product, index) in filteredProducts" :key="index">
-            <td>{{ product.title }}</td>
-            <td :class="{ 'available': product.status === 'Available', 'disabled': product.status === 'Disabled' }">
-              {{ product.status }}
-            </td>
-            <td>${{ product.price.toFixed(2) }}</td>
-            <td>{{ product.description }}</td>
-            <td>{{ product.quantity }}</td>
-            <td>{{ product.category }}</td>
-            <td>
-              <div class="action-buttons">
-                <button class="edit-btn" @click="openEditModal(product)">Edit</button>
-                <button class="delete-btn" @click="deleteProduct(product.id)">Delete</button>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="filteredProducts.length === 0">
-            <td colspan="8" class="empty-message">No products available</td>
-          </tr>
-        </tbody>
+      <thead>
+        <tr>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Price</th>
+        <th>Description</th>
+        <th>Quantity</th>
+        <th>Category</th>
+        <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(product, index) in filteredProducts" :key="index">
+        <td>{{ product.title }}</td>
+        <td :class="{ 'available': product.status === 'Available', 'disabled': product.status === 'Disabled' }">
+          {{ product.status }}
+        </td>
+        <td>${{ product.price.toFixed(2) }}</td>
+        <td>{{ product.description }}</td>
+        <td>{{ product.quantity }}</td>
+        <td>{{ product.category }}</td>
+        <td>
+          <div class="action-buttons">
+          <button class="edit-btn" @click="openEditModal(product)">Edit</button>
+          <button class="delete-btn" @click="deleteProduct(product.id)">Delete</button>
+          </div>
+        </td>
+        </tr>
+        <tr v-if="filteredProducts.length === 0">
+        <td colspan="8" class="empty-message">No products available</td>
+        </tr>
+      </tbody>
       </table>
     </div>
 
     <!-- Edit Modal -->
-    <div v-if="modalActive" class="modal">
+    <div v-show="modalActive" class="modal">
       <div class="modal-content">
-        <h3>Edit Product</h3>
-        <br />
+      <h3>Edit Product</h3>
+      <br />
 
-        <label>Name:</label>
-        <input type="text" v-model="editForm.name" />
+      <label>Name:</label>
+      <input type="text" v-model="editForm.name" />
 
-        <label>Status:</label>
-        <select v-model="editForm.status">
-          <option value="Available">Available</option>
-          <option value="Disabled">Disabled</option>
-        </select>
+      <label>Status:</label>
+      <select v-model="editForm.status">
+        <option value="Available">Available</option>
+        <option value="Disabled">Disabled</option>
+      </select>
 
-        <label>Stock:</label>
-        <input type="number" v-model="editForm.stock" />
+      <label>Stock:</label>
+      <input type="number" v-model="editForm.stock" />
 
-        <label>Price:</label>
-        <input type="number" v-model="editForm.price" />
+      <label>Price:</label>
+      <input type="number" v-model="editForm.price" />
 
-        <label>Description:</label>
-        <textarea v-model="editForm.description"></textarea>
+      <label>Description:</label>
+      <textarea v-model="editForm.description"></textarea>
 
-        <label>Quantity:</label>
-        <input type="number" v-model="editForm.quantity" />
+      <label>Quantity:</label>
+      <input type="number" v-model="editForm.quantity" />
 
-        <label>Category:</label>
-        <select v-model="editForm.category">
-          <option>Fruits</option>
-          <option>Dairy</option>
-          <option>Vegitables</option>
-        </select>
+      <label>Category:</label>
+      <select v-model="editForm.category">
+        <option>Fruits</option>
+        <option>Dairy</option>
+        <option>Vegitables</option>
+      </select>
 
-        <div class="modal-buttons">
-          <button class="save-btn" @click="saveChanges">Save</button>
-          <button class="cancel-btn" @click="modalActive = false">Cancel</button>
-        </div>
+      <div class="modal-buttons">
+        <button @click="updateProduct(editedProduct)">Save</button>
+        <button class="cancel-btn" @click="modalActive = false">Cancel</button>
+      </div>
+      
       </div>
     </div>
-  </div>
-</template>
+    </div>
+  </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex";
+  <script>
+  import { mapActions, mapGetters } from "vuex";
 
-export default {
-  name: "ProductTable",
-  data() {
+  export default {
+    // name: "ProductTable",
+    data() {
     return {
       searchQuery: "",
       selectedCategory: "",
+      modalActive: false,
+      editForm: {
+      name: "",
+      status: "",
+      stock: "",
+      price: "0",
+      description: "",
+      quantity: "",
+      category: "",
+      },
     };
-  },
-  computed: {
+    },
+    computed: {
     ...mapGetters(["getAllProducts", "getCategories"]),
     
     // Filtered products based on search and category
@@ -112,23 +123,23 @@ export default {
       if (!this.getAllProducts) return [];
 
       return this.getAllProducts.filter((product) => {
-        if (!product || !product.title) return false;
+      if (!product || !product.title) return false;
 
-        product.status = product.quantity > 0 ? "Available" : "NA";
+      product.status = product.quantity > 0 ? "Available" : "NA";
 
-        const matchesSearch = product.title.toLowerCase().includes(this.searchQuery.toLowerCase());
-        const matchesCategory = this.selectedCategory ? product.category === this.selectedCategory : true;
+      const matchesSearch = product.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+      const matchesCategory = this.selectedCategory ? product.category === this.selectedCategory : true;
 
-        return matchesSearch && matchesCategory;
+      return matchesSearch && matchesCategory;
       });
     },
 
     categories() {
       return this.getCategories || [];
     },
-  },
-  methods: {
-    ...mapActions(["fetchAllProducts", "fetchProductsByCategory", "deleteProductFromStore"]),
+    },
+    methods: {
+    ...mapActions(["fetchAllProducts", "fetchProductsByCategory", "updateProduct", "deleteProduct"]),
 
     filterProducts() {
       this.$store.dispatch("filterProducts", this.searchQuery);
@@ -136,25 +147,47 @@ export default {
 
     handleCategoryChange() {
       if (this.selectedCategory) {
-        this.fetchProductsByCategory(this.selectedCategory);
+      this.fetchProductsByCategory(this.selectedCategory);
       } else {
-        this.fetchAllProducts();
+      this.fetchAllProducts();
       }
     },
 
     async deleteProduct(productId) {
-      const confirmDelete = confirm("Are you sure you want to delete this product?");
-      if (confirmDelete) {
-        await this.deleteProductFromStore(productId);  // Call Vuex action to delete
-      }
-    },
-    openEditModal(product) {
-      this.editForm = { ...product }; // Pre-fill modal with product data
-      this.modalActive = true;
-    },
+    const confirmDelete = confirm("Are you sure you want to delete this product?");
+    if (confirmDelete) {
+      await this.$store.dispatch("deleteProduct", productId);
+    }
+  },
+  openEditModal(product) {
+    this.updateProduct = { ...product };
+    this.showEditModal = true;
+    console.log(this.modalActive); 
+  },
+  saveChanges() {
+    // Simulate saving changes (you can add Vuex action if needed)
+    this.$store.dispatch("updateProduct", this.editForm)
+    .then(() => {
+      return fetch('http://localhost:5004/api/products', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(this.editForm)
+      });
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Updated Product:", data);
+      this.modalActive = false;
+    })
+    .catch((error) => {
+      console.error("Error updating product:", error);
+    });
+  }
   },
   created() {
-    this.fetchAllProducts();
+  this.fetchAllProducts();
   },
 };
 </script>
@@ -295,5 +328,4 @@ th {
   border-color: #28a745;
   outline: none;
 }
-
 </style>

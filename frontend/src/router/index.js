@@ -6,6 +6,7 @@ import CartView from "../views/Cart.vue";
 import BillingView from "../views/BillingView.vue";  
 import OrdersView from "../views/OrdersView.vue"; 
 import AdminProfile from "@/views/AdminProfile.vue";
+import Coupons from "@/views/coupons.vue";
 
 const routes = [
   {
@@ -57,6 +58,11 @@ const routes = [
     path: "/admin",
     name: "admin",
     component: AdminProfile,
+  },
+  {
+    path: "/coupons",
+    name: "coupons",
+    component: Coupons,
   }
 ];
 
