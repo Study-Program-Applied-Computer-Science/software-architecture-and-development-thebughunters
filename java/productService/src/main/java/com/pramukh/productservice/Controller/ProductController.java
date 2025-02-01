@@ -39,7 +39,6 @@ public class ProductController {
     }
 
 
-
     @GetMapping("/products/category/{category}")
     @Operation(summary = "Get products by category")
     public ResponseEntity<List<ProductResponseDto>> getProductsByCategory(@PathVariable String category) {
