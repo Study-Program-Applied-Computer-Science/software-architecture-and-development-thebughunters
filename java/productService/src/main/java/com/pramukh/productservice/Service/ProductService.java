@@ -7,6 +7,7 @@ import com.pramukh.productservice.GlobalExceptionHandler.EmptyInputException;
 import com.pramukh.productservice.GlobalExceptionHandler.ProductNotFoundException;
 import com.pramukh.productservice.Model.ProductEntity;
 import com.pramukh.productservice.Repository.ProductRespository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 
+@Slf4j
 @Service
 public class ProductService {
 
@@ -36,6 +38,7 @@ public class ProductService {
             products.add(product);
         }
         productRespository.saveAll(products);
+        log.info("Products added successfully");
         return "Products added successfully";
     }
 
@@ -49,6 +52,7 @@ public class ProductService {
         for (ProductEntity product : productEntities) {
             products.add(ProductResponseDto.builder().id(product.getId()).name(product.getName()).description(product.getDescription()).quantity(product.getQuantity()).category(product.getCategory()).price(product.getPrice()).image(Base64.getEncoder().encodeToString(product.getImage())).build());
         }
+        log.info("Products fetched successfully");
         return products;
     }
 
@@ -62,6 +66,7 @@ public class ProductService {
         for (ProductEntity product : productList) {
             products.add(ProductResponseDto.builder().id(product.getId()).name(product.getName()).description(product.getDescription()).quantity(product.getQuantity()).category(product.getCategory()).price(product.getPrice()).image(Base64.getEncoder().encodeToString(product.getImage())).build());
         }
+        log.info("Category products fetched successfully");
         return products;
     }
 
@@ -75,6 +80,7 @@ public class ProductService {
         for (ProductEntity product : productList) {
             products.add(ProductResponseDto.builder().id(product.getId()).name(product.getName()).description(product.getDescription()).quantity(product.getQuantity()).category(product.getCategory()).price(product.getPrice()).image(Base64.getEncoder().encodeToString(product.getImage())).build());
         }
+        log.info("Particular products fetched successfully");
         return products;
     }
 
@@ -85,6 +91,7 @@ public class ProductService {
             throw new ProductNotFoundException("Product not found");
         }
         productRespository.deleteById(id);
+        log.info("Product deleted successfully");
         return "Product deleted successfully";
     }
 
@@ -103,6 +110,7 @@ public class ProductService {
         product.setPrice(updateProductDTO.getPrice());
 
         productRespository.save(product);
+        log.info("Product updated successfully");
         return "Product updated successfully";
     }
 }

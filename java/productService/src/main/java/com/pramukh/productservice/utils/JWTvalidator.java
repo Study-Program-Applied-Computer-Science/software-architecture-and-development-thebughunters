@@ -6,12 +6,14 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.client.RestTemplate;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+@Slf4j
 public class JWTvalidator {
 
     public static DecodedJWT validate(String token) throws Exception {
@@ -45,6 +47,7 @@ public class JWTvalidator {
             return jwt;
 
         } catch (Exception e) {
+            log.error("JWT Validation Error");
             throw new RuntimeException("Jwt Validation Error " + e.getMessage());
         }
     }
@@ -63,10 +66,12 @@ public class JWTvalidator {
                     return publicKey;
 
                 } catch (Exception ex) {
+                    log.error("Failed to generate RSAPublicKey from the key");
                     throw new Exception("Failed to generate RSAPublicKey", ex);
                 }
             }
         }
+        log.error("Unable to find a signing key that matches the 'kid'");
         throw new Exception("Unable to find a signing key that matches the 'kid'");
     }
 
@@ -83,6 +88,7 @@ public class JWTvalidator {
             JsonNode jsonNode = objectMapper.readTree(keys);
             return jsonNode.get("keys");
         } catch (Exception e) {
+            log.error("Error fetching keys from " + jku);
             System.err.println("Error fetching keys from " + jku);
             e.printStackTrace();
             throw new Exception("Failed to fetch keys", e);
